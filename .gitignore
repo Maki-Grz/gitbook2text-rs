@@ -1,0 +1,6 @@
+/target
+Cargo.lock
+.idea
+links.txt
+/data/txt/
+/data/md/
