@@ -1,6 +1,6 @@
 [package]
 name = "gitbook2text-rs"
-version = "0.1.0-alpha"
+version = "0.2.0-alpha"
 edition = "2024"
 
 [dependencies]
@@ -8,3 +8,4 @@ tokio = { version = "1.47.1", features = ["fs", "rt", "rt-multi-thread", "macros
 futures = "0.3.31"
 reqwest = "0.12.23"
 pulldown-cmark = "0.13.0"
+regex = "1.11.2"

@@ -1,4 +1,5 @@
 use pulldown_cmark::{Event, Parser};
+use regex::Regex;
 use tokio::fs;
 
 pub async fn download_page(url: &str) -> Result<String, Box<dyn std::error::Error>> {
@@ -33,6 +34,35 @@ pub fn markdown_to_text(md: &str) -> String {
     }
 
     text
+}
+
+pub fn txt_sanitize(txt: &str) -> String {
+    let mut result = String::from(txt);
+
+    let re_code = Regex::new(r#"\{%\s*code[^}]*title\s*=\s*"([^"]+)"[^}]*%}(.*?)\{%\s*endcode\s*%\}"#).unwrap();
+    result = re_code
+        .replace_all(&result, |caps: &regex::Captures| {
+            format!("{} {}", &caps[1], &caps[2])
+        })
+        .to_string();
+
+    let re_code_no_title = Regex::new(r#"\{%\s*code[^}]*%}(.*?)\{%\s*endcode\s*%\}"#).unwrap();
+    result = re_code_no_title
+        .replace_all(&result, |caps: &regex::Captures| {
+            caps[1].to_string()
+        })
+        .to_string();
+
+    let re_title = Regex::new(r#"\{%\s*[^}]*title\s*=\s*"([^"]+)"[^}]*%\}"#).unwrap();
+    result = re_title.replace_all(&result, "$1").to_string();
+
+    let re_generic = Regex::new(r#"\{%\s*[^}]*%\}"#).unwrap();
+    result = re_generic.replace_all(&result, "").to_string();
+
+    let re_space = Regex::new(r"\s+").unwrap();
+    result = re_space.replace_all(&result, " ").to_string();
+
+    result.trim().to_string()
 }
 
 pub async fn save_text(url: &str, content: &str) -> Result<(), Box<dyn std::error::Error>> {

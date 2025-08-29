@@ -1,6 +1,6 @@
 mod utils;
 
-use crate::utils::{download_page, markdown_to_text, save_markdown, save_text};
+use crate::utils::{download_page, markdown_to_text, save_markdown, save_text, txt_sanitize};
 use futures::stream::FuturesUnordered;
 use futures::StreamExt;
 use std::collections::HashSet;
@@ -9,8 +9,6 @@ use std::fs;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let content = fs::read_to_string("links.txt");
-
-    /*todo: get markdown from gitbook uri if possible */
 
     let mut urls: HashSet<String> = content?
         .lines()
@@ -37,9 +35,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             save_markdown(&url_clone, &md_content).await?;
 
             let text_content = markdown_to_text(&md_content);
-            save_text(&url_clone, &text_content).await?;
-
-            /*todo: Markedown sanitizer (remove html & markedown tags) */
+            let text_cleaned = txt_sanitize(&text_content.as_str());
+            save_text(&url_clone, &text_cleaned).await?;
 
             Ok::<(), Box<dyn std::error::Error>>(())
         });
