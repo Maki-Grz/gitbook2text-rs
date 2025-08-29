@@ -59,8 +59,8 @@ pub fn txt_sanitize(txt: &str) -> String {
     let re_generic = Regex::new(r#"\{%\s*[^}]*%\}"#).unwrap();
     result = re_generic.replace_all(&result, "").to_string();
 
-    let re_dash = Regex::new(r"-").unwrap();
-    result = re_dash.replace_all(&result, " ").to_string();
+    let re_dash = Regex::new(r#"["|-]"#).unwrap();
+    result = re_dash.replace_all(&result, "").to_string();
 
     let re_space = Regex::new(r"\s+").unwrap();
     result = re_space.replace_all(&result, " ").to_string();
